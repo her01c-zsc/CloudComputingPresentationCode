@@ -18,7 +18,7 @@ type GameMessage struct {
 }
 
 func main() {
-	fmt.Println("=== 实验三：TCP 粘包处理与 JSON 序列化演示 (带详细打印版) ===")
+	fmt.Println("=== 实验三：TCP 粘包处理与 JSON 序列化演示  ===")
 
 	listener, err := net.Listen("tcp", "127.0.0.1:8888")
 	if err != nil {
@@ -71,12 +71,12 @@ func runServer(listener net.Listener) {
 	defer conn.Close()
 	
 	fmt.Println("\n[服务端] 成功接收客户端连接！")
-	fmt.Println("[服务端] ⚠️ 正在刻意休眠 1 秒钟，暂时不读取网卡数据...")
+	fmt.Println("[服务端] 休眠 1 秒钟，暂时不读取网卡数据...")
 	fmt.Println("[服务端] (等待客户端的多条消息在 TCP 底层缓冲区中发生物理堆积)")
 
 	time.Sleep(1 * time.Second) 
 
-	fmt.Println("\n[服务端] 休眠结束！开始按照【4字节长度前缀】精确切割这坨粘在一起的字节流...")
+	fmt.Println("\n[服务端] 按照【4字节长度前缀】切割字节流...")
 	for {
 		var msg GameMessage
 		err := recvJSON(conn, &msg)
@@ -89,7 +89,7 @@ func runServer(listener net.Listener) {
 			return
 		}
 		
-		fmt.Printf("   ✅ [服务端-成功解包] 收到指令 -> [玩家:%d | 动作:%-6s | 坐标:(%.1f, %.1f)]\n", 
+		fmt.Printf("[服务端-成功解包] 收到指令 -> [玩家:%d | 动作:%-6s | 坐标:(%.1f, %.1f)]\n", 
 			msg.PlayerID, msg.Action, msg.PositionX, msg.PositionY)
 	}
 }
@@ -101,7 +101,7 @@ func runClient() {
 	}
 	defer conn.Close()
 
-	fmt.Println("\n[客户端] 成功连接服务器！准备瞬间连续发送 3 条消息...")
+	fmt.Println("\n[客户端] 成功连接服务器。连续发送 3 条消息...")
 
 	messages := []GameMessage{
 		{Action: "Move", PlayerID: 1001, PositionX: 10.5, PositionY: 20.0},
@@ -120,5 +120,5 @@ func runClient() {
 			return
 		}
 	}
-	fmt.Println("[客户端] 💥 3 条消息已在极短时间内发送完毕！此时它们在网络通道里已经粘在一起了。")
+	fmt.Println("[客户端] 3 条消息发送完成，发生黏包。")
 }

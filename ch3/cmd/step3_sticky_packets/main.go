@@ -17,7 +17,7 @@ type GameMessage struct {
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("=== 实验 3.1：TCP 粘包灾难现场 (时序对齐与详细打印版) ===")
+	fmt.Println("=== 实验 3 ：TCP 粘包灾难现场 ===")
 	fmt.Println("==================================================")
 
 	listener, err := net.Listen("tcp", "127.0.0.1:8888")
@@ -46,7 +46,7 @@ func runServer(listener net.Listener) {
 	defer conn.Close()
 
 	fmt.Println("\n[服务端] 成功接收客户端连接！")
-	fmt.Println("[服务端] ⚠️ 正在刻意休眠 1 秒钟，暂时不读取网卡数据...")
+	fmt.Println("[服务端] 正在刻意休眠 1 秒钟，暂时不读取网卡数据...")
 	
 
 	// 【核心时序控制】：强行休眠，让网卡里的无边界字节流全部挤在一起
@@ -62,20 +62,20 @@ func runServer(listener net.Listener) {
 	}
 
 	rawString := string(buffer[:n])
-	fmt.Println("\n>>> 【服务端惊恐地发现】它一次性读到了以下连体字节流：")
+	fmt.Println("\n>>> 【服务端】一次性读到了以下连体字节流：")
 	fmt.Println(rawString)
 	fmt.Println("<<<")
 
 	var msg GameMessage
-	fmt.Println("\n[服务端] 试图将这坨粘在一起的数据交给 JSON 解析器...")
+	fmt.Println("\n[服务端] 将粘在一起的数据交给 JSON 解析器...")
 	
 	// 试图反序列化
 	err = json.Unmarshal(buffer[:n], &msg)
 	if err != nil {
-		fmt.Printf("   ❌ [服务端彻底崩溃] JSON 解析致命错误: %v\n", err)
+		fmt.Printf("[服务端崩溃] JSON 解析错误: %v\n", err)
 		
 	} else {
-		fmt.Println("   ✅ 居然解析成功了？(这在粘包情况下是不可能的)")
+		fmt.Println("[服务端] 解析成功 (这在粘包情况下是不可能的)")
 	}
 }
 
@@ -103,5 +103,5 @@ func runClient() {
 		sendRawJSON(conn, msg)
 	}
 	
-	fmt.Println("[客户端] 💥 3 条消息已强制推入底层 TCP 协议栈！由于没有边界保护，它们马上就要粘在一起了。")
+	fmt.Println("[客户端] 3 条消息已强制推入底层 TCP 协议栈！")
 }

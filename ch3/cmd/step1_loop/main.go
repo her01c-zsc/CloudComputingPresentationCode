@@ -20,7 +20,7 @@ func main() {
 	state := GameState{PlayerX: 0, PlayerY: 0, Frame: 0}
 
 	fmt.Println("==================================================")
-	fmt.Println("=== 游戏主循环 (Game Loop) 核心三步曲演示 ===")
+	fmt.Println("=== 游戏主循环 (Game Loop) ===")
 	fmt.Println("操作说明：请输入 W(上) S(下) A(左) D(右) 并按回车发送。")
 	fmt.Println("系统机制：世界每 5 秒刷新一次（Tick），观察终端打印的三个阶段。")
 	fmt.Println("按 Ctrl+C 退出程序。")
@@ -52,12 +52,12 @@ func main() {
 		<-ticker.C // 等待 5 秒钟的“滴答”
 		state.Frame++
 
-		fmt.Printf("\n>>> 【Tick %03d 触发】开始执行本帧主循环 <<<\n", state.Frame)
+		fmt.Printf("\n>>> 【Tick %03d 】 <<<\n", state.Frame)
 
 		// ----------------------------------------------------
 		// 阶段 1：输入采集 (Input)
 		// ----------------------------------------------------
-		fmt.Print("├─ [阶段 1: 输入采集] 正在提取过去 5 秒内的指令... ")
+		fmt.Print("├─ [阶段 1: 输入采集]  ")
 		cmd := "NONE"
 	DrainLoop:
 		for {
@@ -73,13 +73,13 @@ func main() {
 		// ----------------------------------------------------
 		// 阶段 2：逻辑计算 (Update)
 		// ----------------------------------------------------
-		fmt.Print("├─ [阶段 2: 逻辑计算] 根据指令推演世界状态... ")
+		fmt.Print("├─ [阶段 2: 逻辑计算]  ")
 		oldX, oldY := state.PlayerX, state.PlayerY
 		
 		updateState(&state, cmd) // 调用计算逻辑
 		
 		if state.PlayerX == oldX && state.PlayerY == oldY {
-			fmt.Println("计算结果: 玩家位置无变化 (原地待命)")
+			fmt.Println("计算结果: 玩家位置无变化")
 		} else {
 			fmt.Printf("计算结果: 发生位移，坐标从 (%d, %d) 变为 (%d, %d)\n", oldX, oldY, state.PlayerX, state.PlayerY)
 		}
@@ -87,7 +87,7 @@ func main() {
 		// ----------------------------------------------------
 		// 阶段 3：画面渲染 (Render)
 		// ----------------------------------------------------
-		fmt.Print("└─ [阶段 3: 画面渲染] 正在生成本帧画面投影... ")
+		fmt.Print("└─ [阶段 3: 画面渲染]  ")
 		render(state, cmd)
 		fmt.Println("--------------------------------------------------")
 	}
@@ -111,5 +111,5 @@ func updateState(state *GameState, cmd string) {
 func render(state GameState, cmd string) {
 	// 在真实的引擎中，这里会调用 OpenGL/DirectX 画图
 	// 在终端里，我们用一行高度格式化的文本代表“一帧画面”
-	fmt.Printf("画面已更新 [当前绝对坐标 X: %d, Y: %d]\n", state.PlayerX, state.PlayerY)
+	fmt.Printf("[当前绝对坐标 X: %d, Y: %d]\n", state.PlayerX, state.PlayerY)
 }
